@@ -51,6 +51,20 @@ dependencies {
 test {
     maxParallelForks = 3
     useJUnitPlatform()
+
+    // Custom listener to track test execution time
+    def testStartTimes = [:]
+
+    beforeTest { descriptor ->
+        testStartTimes[descriptor.id] = System.currentTimeMillis()
+    }
+
+    afterTest { descriptor, result ->
+        def startTime = testStartTimes.remove(descriptor.id)
+        def duration = System.currentTimeMillis() - startTime
+
+        println "⏱️ ${descriptor.className} > ${descriptor.name} took : ${duration} ms"
+    }
 }
 
 jar {
